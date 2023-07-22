@@ -12,8 +12,11 @@ import (
 	"github.com/nikoksr/onelog"
 )
 
-// This is a compile-time check to ensure that Adapter implements the onelog.Logger interface.
-var _ onelog.Logger = (*SugarAdapter)(nil)
+// Compile-time check that Adapter and Context implements onelog.Logger and onelog.LoggerContext respectively
+var (
+	_ onelog.Logger        = (*Adapter)(nil)
+	_ onelog.LoggerContext = (*Context)(nil)
+)
 
 type (
 	SugarAdapter struct {

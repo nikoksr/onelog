@@ -9,7 +9,11 @@ import (
 	"github.com/nikoksr/onelog"
 )
 
-var _ onelog.Logger = (*Adapter)(nil)
+// Compile-time check that Adapter and Context implements onelog.Logger and onelog.LoggerContext respectively
+var (
+	_ onelog.Logger        = (*Adapter)(nil)
+	_ onelog.LoggerContext = (*Context)(nil)
+)
 
 type (
 	Adapter struct {
