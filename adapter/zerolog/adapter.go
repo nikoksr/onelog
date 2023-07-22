@@ -518,7 +518,7 @@ func (c *Context) Fields(fields onelog.Fields) onelog.LoggerContext {
 	return c
 }
 
-// Msg sends the logger context with level DEBUG.
+// Msg sends the LoggerContext with msg to the logger.
 func (c *Context) Msg(msg string) {
 	if c == nil {
 		return
@@ -527,7 +527,7 @@ func (c *Context) Msg(msg string) {
 	c.event.Msg(msg)
 }
 
-// Msgf sends the logger context with level DEBUG.
+// Msgf sends the LoggerContext with formatted msg to the logger.
 func (c *Context) Msgf(format string, v ...any) {
 	if c == nil {
 		return

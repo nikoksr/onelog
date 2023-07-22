@@ -531,7 +531,7 @@ func (c *SugarContext) Fields(fields onelog.Fields) onelog.LoggerContext {
 	return c
 }
 
-// Msg writes the message and fields to the logger.
+// Msg sends the LoggerContext with msg to the logger.
 func (c *SugarContext) Msg(msg string) {
 	if c == nil {
 		return
@@ -552,7 +552,7 @@ func (c *SugarContext) Msg(msg string) {
 	c.fields = make([]any, 0) // reset fields
 }
 
-// Msgf writes the formatted message and fields to the logger.
+// Msgf sends the LoggerContext with formatted msg to the logger.
 func (c *SugarContext) Msgf(format string, v ...any) {
 	if c == nil {
 		return
