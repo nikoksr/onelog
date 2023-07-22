@@ -7,34 +7,37 @@
 // with logging setup and promotes consistency in logging across different parts of a project or across different projects.
 //
 // Here is a brief example using the zapadapter and slogadapter:
-
-//			import (
-//		        "go.uber.org/zap"
-//		        "github.com/nikoksr/onelog"
-//		        "github.com/nikoksr/onelog/zapadapter"
-//		        "github.com/nikoksr/onelog/slogadapter"
-//			)
 //
-//			type superTracker struct {
-//		     superEventLogger onelog.Logger
-//			}
+//	package main
 //
-//			func main() {
-//		        // Let's use zap's development logger as our superhero event logger
-//		        logger, _ := zap.NewDevelopment()
+//	import (
+//	    "go.uber.org/zap"
+//	    "golang.org/x/exp/slog"
 //
-//		        tracker := &superTracker{
-//		            superEventLogger: zapadapter.NewAdapter(logger),
-//		        }
+//	    "github.com/nikoksr/onelog"
+//	    slogadapter "github.com/nikoksr/onelog/adapter/slog"
+//	    zapadapter "github.com/nikoksr/onelog/adapter/zap"
+//	)
 //
-//		        // Now let's log a superhero event
-//		        tracker.superEventLogger.Info().Msg("Superman spotted in New York!")
+//	type superheroTracker struct {
+//	    logger onelog.Logger
+//	}
 //
-//		        // Or perhaps we'd rather use slog for logging our superhero sightings
-//		        logger := slog.Default()
-//		        tracker.superEventLogger = slogadapter.NewAdapter(logger)
+//	func main() {
+//	    // Let's use zap's development logger as our superhero event logger
+//	    logger, _ := zap.NewDevelopment()
 //
-//	         // And now we can log another sighting
-//	         tracker.superEventLogger.Info().Msg("Wonder Woman seen flying over Paris!")
-//			}
+//	    heroes := &superheroTracker{
+//	        logger: zapadapter.NewAdapter(logger),
+//	    }
+//
+//	    // Now let's log a superhero event
+//	    heroes.logger.Info().Msg("Superman spotted in New York!")
+//
+//	    // Or perhaps we'd rather use slog for logging our superhero sightings
+//	    heroes.logger = slogadapter.NewAdapter(slog.Default())
+//
+//	    // And now we can log another sighting
+//	    heroes.logger.Info().Msg("Wonder Woman seen flying over Paris!")
+//	}
 package onelog
