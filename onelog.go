@@ -52,6 +52,7 @@ type LoggerContext interface {
 	Times(key string, value []time.Time) LoggerContext
 	Dur(key string, value time.Duration) LoggerContext
 	Durs(key string, value []time.Duration) LoggerContext
+	TimeDiff(key string, t time.Time, start time.Time) LoggerContext
 
 	IPAddr(key string, value net.IP) LoggerContext
 	IPPrefix(key string, value net.IPNet) LoggerContext

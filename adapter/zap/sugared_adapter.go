@@ -431,6 +431,18 @@ func (c *SugarContext) Durs(key string, value []time.Duration) onelog.LoggerCont
 	return c
 }
 
+// TimeDiff adds the field key with begin and end as a time.Time to the logger context.
+func (c *SugarContext) TimeDiff(key string, begin, end time.Time) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	diff := end.Sub(begin)
+	c.addField(key, diff)
+
+	return c
+}
+
 // IPAddr adds the field key with val as a net.IP to the logger context.
 func (c *SugarContext) IPAddr(key string, value net.IP) onelog.LoggerContext {
 	if c == nil {

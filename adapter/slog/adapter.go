@@ -415,6 +415,18 @@ func (c *Context) Durs(key string, value []time.Duration) onelog.LoggerContext {
 	return c
 }
 
+// TimeDiff adds the field key with begin and end as a time.Time to the logger context.
+func (c *Context) TimeDiff(key string, begin, end time.Time) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	diff := end.Sub(begin)
+	c.fields = append(c.fields, slog.Duration(key, diff))
+
+	return c
+}
+
 // IPAddr adds the field key with val as a net.IPAddr to the logger context.
 func (c *Context) IPAddr(key string, value net.IP) onelog.LoggerContext {
 	if c == nil {
