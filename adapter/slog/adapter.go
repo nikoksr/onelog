@@ -18,10 +18,12 @@ var (
 )
 
 type (
+	// Adapter is a slog adapter for onelog. It implements the onelog.Logger interface.
 	Adapter struct {
 		logger *slog.Logger
 	}
 
+	// Context is the slog logging context. It implements the onelog.LoggerContext interface.
 	Context struct {
 		level  slog.Level
 		logger *slog.Logger
@@ -29,6 +31,7 @@ type (
 	}
 )
 
+// NewAdapter creates a new slog adapter for onelog.
 func NewAdapter(l *slog.Logger) onelog.Logger {
 	return &Adapter{
 		logger: l,
@@ -43,22 +46,27 @@ func (a *Adapter) newContext(level slog.Level) *Context {
 	}
 }
 
+// Debug returns a LoggerContext for a debug log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Debug() onelog.LoggerContext {
 	return a.newContext(slog.LevelDebug)
 }
 
+// Info returns a LoggerContext for an info log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Info() onelog.LoggerContext {
 	return a.newContext(slog.LevelInfo)
 }
 
+// Warn returns a LoggerContext for a warn log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Warn() onelog.LoggerContext {
 	return a.newContext(slog.LevelWarn)
 }
 
+// Error returns a LoggerContext for an error log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Error() onelog.LoggerContext {
 	return a.newContext(slog.LevelError)
 }
 
+// Fatal returns a LoggerContext for a fatal log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Fatal() onelog.LoggerContext {
 	return a.newContext(slog.LevelError) // Using Error level here because Fatal is not supported by slog
 }

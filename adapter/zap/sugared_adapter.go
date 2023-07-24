@@ -19,10 +19,12 @@ var (
 )
 
 type (
+	// SugarAdapter is a zap-sugared adapter for onelog. It implements the onelog.Logger interface.
 	SugarAdapter struct {
 		logger *zap.SugaredLogger
 	}
 
+	// SugarContext is the zap-sugared logging context. It implements the onelog.LoggerContext interface.
 	SugarContext struct {
 		level  zapcore.Level
 		logger *zap.SugaredLogger
@@ -30,6 +32,7 @@ type (
 	}
 )
 
+// NewSugarAdapter creates a new zap-sugared adapter for onelog.
 func NewSugarAdapter(l *zap.SugaredLogger) onelog.Logger {
 	return &SugarAdapter{
 		logger: l,
@@ -44,26 +47,27 @@ func (a *SugarAdapter) newContext(level zapcore.Level) onelog.LoggerContext {
 	}
 }
 
+// Debug returns a LoggerContext for a debug log. To send the log, use the Msg or Msgf methods.
 func (a *SugarAdapter) Debug() onelog.LoggerContext {
 	return a.newContext(zapcore.DebugLevel)
 }
 
-// Info returns a LoggerContext for info level logging.
+// Info returns a LoggerContext for an info log. To send the log, use the Msg or Msgf methods.
 func (a *SugarAdapter) Info() onelog.LoggerContext {
 	return a.newContext(zapcore.InfoLevel)
 }
 
-// Warn returns a LoggerContext for warning level logging.
+// Warn returns a LoggerContext for a warning log. To send the log, use the Msg or Msgf methods.
 func (a *SugarAdapter) Warn() onelog.LoggerContext {
 	return a.newContext(zapcore.WarnLevel)
 }
 
-// Error returns a LoggerContext for error level logging.
+// Error returns a LoggerContext for an error log. To send the log, use the Msg or Msgf methods.
 func (a *SugarAdapter) Error() onelog.LoggerContext {
 	return a.newContext(zapcore.ErrorLevel)
 }
 
-// Fatal returns a LoggerContext for fatal level logging.
+// Fatal returns a LoggerContext for a fatal log. To send the log, use the Msg or Msgf methods.
 func (a *SugarAdapter) Fatal() onelog.LoggerContext {
 	return a.newContext(zapcore.FatalLevel)
 }

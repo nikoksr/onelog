@@ -18,10 +18,12 @@ var (
 )
 
 type (
+	// Adapter is a zap adapter for onelog. It implements the onelog.Logger interface.
 	Adapter struct {
 		logger *zap.Logger
 	}
 
+	// Context is the zap logging context. It implements the onelog.LoggerContext interface.
 	Context struct {
 		level  zapcore.Level
 		logger *zap.Logger
@@ -29,6 +31,7 @@ type (
 	}
 )
 
+// NewAdapter creates a new zap adapter for onelog.
 func NewAdapter(l *zap.Logger) onelog.Logger {
 	return &Adapter{
 		logger: l,
@@ -43,22 +46,27 @@ func (a *Adapter) newContext(level zapcore.Level) onelog.LoggerContext {
 	}
 }
 
+// Debug returns a LoggerContext for a debug log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Debug() onelog.LoggerContext {
 	return a.newContext(zap.DebugLevel)
 }
 
+// Info returns a LoggerContext for a info log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Info() onelog.LoggerContext {
 	return a.newContext(zap.InfoLevel)
 }
 
+// Warn returns a LoggerContext for a warn log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Warn() onelog.LoggerContext {
 	return a.newContext(zap.WarnLevel)
 }
 
+// Error returns a LoggerContext for a error log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Error() onelog.LoggerContext {
 	return a.newContext(zap.ErrorLevel)
 }
 
+// Fatal returns a LoggerContext for a fatal log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Fatal() onelog.LoggerContext {
 	return a.newContext(zap.FatalLevel)
 }

@@ -20,6 +20,7 @@ type (
 	Context struct{}
 )
 
+// NewAdapter returns a new adapter. The nop adapter does not log anything and can be used as a placeholder or fallback.
 func NewAdapter() onelog.Logger { return &Adapter{} }
 
 func (a *Adapter) Debug() onelog.LoggerContext { return &Context{} }

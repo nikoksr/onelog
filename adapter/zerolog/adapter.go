@@ -17,22 +17,26 @@ var (
 )
 
 type (
+	// Adapter is a zerolog adapter for onelog. It implements the onelog.Logger interface.
 	Adapter struct {
 		logger *zerolog.Logger
 	}
 
+	// Context is the zerolog logging context. It implements the onelog.LoggerContext interface.
 	Context struct {
 		logger *zerolog.Logger
 		event  *zerolog.Event
 	}
 )
 
+// NewAdapter creates a new zerolog adapter for onelog.
 func NewAdapter(l *zerolog.Logger) onelog.Logger {
 	return &Adapter{
 		logger: l,
 	}
 }
 
+// Debug returns a LoggerContext for a debug log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Debug() onelog.LoggerContext {
 	return &Context{
 		logger: a.logger,
@@ -40,6 +44,7 @@ func (a *Adapter) Debug() onelog.LoggerContext {
 	}
 }
 
+// Info returns a LoggerContext for a info log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Info() onelog.LoggerContext {
 	return &Context{
 		logger: a.logger,
@@ -47,6 +52,7 @@ func (a *Adapter) Info() onelog.LoggerContext {
 	}
 }
 
+// Warn returns a LoggerContext for a warn log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Warn() onelog.LoggerContext {
 	return &Context{
 		logger: a.logger,
@@ -54,6 +60,7 @@ func (a *Adapter) Warn() onelog.LoggerContext {
 	}
 }
 
+// Error returns a LoggerContext for a error log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Error() onelog.LoggerContext {
 	return &Context{
 		logger: a.logger,
@@ -61,6 +68,7 @@ func (a *Adapter) Error() onelog.LoggerContext {
 	}
 }
 
+// Fatal returns a LoggerContext for a fatal log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Fatal() onelog.LoggerContext {
 	return &Context{
 		logger: a.logger,
