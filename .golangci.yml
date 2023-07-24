@@ -4,6 +4,7 @@ run:
   skip-dirs:
     - '_examples'
     - '_playground'
+    - 'adapter/nop'
   allow-parallel-runners: true
   modules-download-mode: 'readonly'
 
