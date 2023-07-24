@@ -1,6 +1,7 @@
 package onelog
 
 import (
+	"fmt"
 	"net"
 	"time"
 )
@@ -33,6 +34,12 @@ type LoggerContext interface {
 
 	// Strs adds the field key with val as a []string to the logger context.
 	Strs(key string, value []string) LoggerContext
+
+	// Stringer adds the field key with val as a fmt.Stringer to the logger context.
+	Stringer(key string, val fmt.Stringer) LoggerContext
+
+	// Stringers adds the field key with val as a []fmt.Stringer to the logger context.
+	Stringers(key string, vals []fmt.Stringer) LoggerContext
 
 	// Int adds the field key with val as an int to the logger context.
 	Int(key string, value int) LoggerContext

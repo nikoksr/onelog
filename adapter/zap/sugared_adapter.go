@@ -101,6 +101,28 @@ func (c *SugarContext) Strs(key string, value []string) onelog.LoggerContext {
 	return c
 }
 
+// Stringer adds the field key with val as a fmt.Stringer to the logger context.
+func (c *SugarContext) Stringer(key string, val fmt.Stringer) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.addField(key, val)
+
+	return c
+}
+
+// Stringers adds the field key with val as a []fmt.Stringer to the logger context.
+func (c *SugarContext) Stringers(key string, vals []fmt.Stringer) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.addField(key, vals)
+
+	return c
+}
+
 // Int adds the field key with val as a int to the logger context.
 func (c *SugarContext) Int(key string, value int) onelog.LoggerContext {
 	if c == nil {

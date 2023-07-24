@@ -85,6 +85,32 @@ func (c *Context) Strs(key string, value []string) onelog.LoggerContext {
 	return c
 }
 
+// Stringer adds the field key with val as a fmt.Stringer to the logger context.
+func (c *Context) Stringer(key string, value fmt.Stringer) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.fields = append(c.fields, slog.String(key, value.String()))
+
+	return c
+}
+
+// Stringers adds the field key with val as a []fmt.Stringer to the logger context.
+func (c *Context) Stringers(key string, value []fmt.Stringer) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	strs := make([]string, len(value))
+	for i, str := range value {
+		strs[i] = str.String()
+	}
+	c.fields = append(c.fields, slog.Group(key, strs))
+
+	return c
+}
+
 // Int adds the field key with val as a int to the logger context.
 func (c *Context) Int(key string, value int) onelog.LoggerContext {
 	if c == nil {

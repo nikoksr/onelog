@@ -1,6 +1,7 @@
 package zerologadapter
 
 import (
+	"fmt"
 	"net"
 	"time"
 
@@ -85,6 +86,28 @@ func (c *Context) Strs(key string, value []string) onelog.LoggerContext {
 	}
 
 	c.event.Strs(key, value)
+
+	return c
+}
+
+// Stringer adds the field key with val as a fmt.Stringer to the logger context.
+func (c *Context) Stringer(key string, val fmt.Stringer) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.event.Stringer(key, val)
+
+	return c
+}
+
+// Stringers adds the field key with val as a []fmt.Stringer to the logger context.
+func (c *Context) Stringers(key string, vals []fmt.Stringer) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.event.Stringers(key, vals)
 
 	return c
 }

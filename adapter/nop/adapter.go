@@ -1,6 +1,7 @@
 package nopadapter
 
 import (
+	"fmt"
 	"net"
 	"time"
 
@@ -29,6 +30,8 @@ func (a *Adapter) Fatal() onelog.LoggerContext { return &Context{} }
 
 func (c *Context) Str(_, _ string) onelog.LoggerContext                             { return c }
 func (c *Context) Strs(_ string, _ []string) onelog.LoggerContext                   { return c }
+func (c *Context) Stringer(_ string, _ fmt.Stringer) onelog.LoggerContext           { return c }
+func (c *Context) Stringers(_ string, _ []fmt.Stringer) onelog.LoggerContext        { return c }
 func (c *Context) Int(_ string, _ int) onelog.LoggerContext                         { return c }
 func (c *Context) Ints(_ string, _ []int) onelog.LoggerContext                      { return c }
 func (c *Context) Int8(_ string, _ int8) onelog.LoggerContext                       { return c }
