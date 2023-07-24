@@ -25,7 +25,7 @@ type (
 	Context struct {
 		level  slog.Level
 		logger *slog.Logger
-		fields []slog.Attr
+		fields []any
 	}
 )
 
@@ -39,7 +39,7 @@ func (a *Adapter) newContext(level slog.Level) *Context {
 	return &Context{
 		level:  level,
 		logger: a.logger,
-		fields: make([]slog.Attr, 0),
+		fields: make([]any, 0),
 	}
 }
 
@@ -552,8 +552,8 @@ func (c *Context) Msg(msg string) {
 		return
 	}
 
-	c.logger.Log(context.Background(), c.level, msg, c.fields)
-	c.fields = make([]slog.Attr, 0) // reset fields
+	c.logger.Log(context.Background(), c.level, msg, c.fields...)
+	c.fields = make([]any, 0) // reset fields
 }
 
 // Msgf sends the LoggerContext with formatted msg to the logger.
