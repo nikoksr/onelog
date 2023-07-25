@@ -6,9 +6,8 @@
 
 &nbsp;
 
-[![codecov](https://codecov.io/gh/nikoksr/onelog/branch/main/graph/badge.svg?token=9KTRRRWM5A)](https://codecov.io/gh/nikoksr/onelog)
+[![codecov](https://codecov.io/gh/nikoksr/onelog/branch/main/graph/badge.svg?token=oVqojUn7pd)](https://codecov.io/gh/nikoksr/onelog)
 [![Go Report Card](https://goreportcard.com/badge/github.com/nikoksr/onelog)](https://goreportcard.com/report/github.com/nikoksr/onelog)
-[![Maintainability](https://api.codeclimate.com/v1/badges/8d58f3077a2b6ee2ac57/maintainability)](https://codeclimate.com/github/nikoksr/onelog/maintainability)
 [![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat)](https://pkg.go.dev/github.com/nikoksr/onelog)
 </div>
 
