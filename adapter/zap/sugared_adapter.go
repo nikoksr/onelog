@@ -85,10 +85,6 @@ func (c *SugarContext) addFields(fields onelog.Fields) {
 
 // Bytes adds the field key with val as a []byte to the logger context.
 func (c *SugarContext) Bytes(key string, value []byte) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, string(value))
 
 	return c
@@ -96,10 +92,6 @@ func (c *SugarContext) Bytes(key string, value []byte) onelog.LoggerContext {
 
 // Hex adds the field key with val as a hex string to the logger context.
 func (c *SugarContext) Hex(key string, value []byte) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, fmt.Sprintf("%x", value))
 
 	return c
@@ -107,21 +99,13 @@ func (c *SugarContext) Hex(key string, value []byte) onelog.LoggerContext {
 
 // RawJSON adds the field key with val as a json.RawMessage to the logger context.
 func (c *SugarContext) RawJSON(key string, value []byte) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
-	c.addField(key, value)
+	c.addField(key, string(value))
 
 	return c
 }
 
 // Str adds the field key with val as a string to the logger context.
 func (c *SugarContext) Str(key string, value string) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -129,10 +113,6 @@ func (c *SugarContext) Str(key string, value string) onelog.LoggerContext {
 
 // Strs adds the field key with val as a []string to the logger context.
 func (c *SugarContext) Strs(key string, value []string) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -140,19 +120,11 @@ func (c *SugarContext) Strs(key string, value []string) onelog.LoggerContext {
 
 // Stringer adds the field key with val as a fmt.Stringer to the logger context.
 func (c *SugarContext) Stringer(key string, val fmt.Stringer) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	return c.Str(key, val.String())
 }
 
 // Stringers adds the field key with val as a []fmt.Stringer to the logger context.
 func (c *SugarContext) Stringers(key string, vals []fmt.Stringer) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	// Todo: Better way to do this?
 	strings := make([]string, len(vals))
 	for i, val := range vals {
@@ -164,10 +136,6 @@ func (c *SugarContext) Stringers(key string, vals []fmt.Stringer) onelog.LoggerC
 
 // Int adds the field key with val as a int to the logger context.
 func (c *SugarContext) Int(key string, value int) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -175,10 +143,6 @@ func (c *SugarContext) Int(key string, value int) onelog.LoggerContext {
 
 // Ints adds the field key with val as a []int to the logger context.
 func (c *SugarContext) Ints(key string, value []int) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -186,10 +150,6 @@ func (c *SugarContext) Ints(key string, value []int) onelog.LoggerContext {
 
 // Int8 adds the field key with val as a int8 to the logger context.
 func (c *SugarContext) Int8(key string, value int8) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -197,10 +157,6 @@ func (c *SugarContext) Int8(key string, value int8) onelog.LoggerContext {
 
 // Ints8 adds the field key with val as a []int8 to the logger context.
 func (c *SugarContext) Ints8(key string, value []int8) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -208,10 +164,6 @@ func (c *SugarContext) Ints8(key string, value []int8) onelog.LoggerContext {
 
 // Int16 adds the field key with val as a int16 to the logger context.
 func (c *SugarContext) Int16(key string, value int16) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -219,10 +171,6 @@ func (c *SugarContext) Int16(key string, value int16) onelog.LoggerContext {
 
 // Ints16 adds the field key with val as a []int16 to the logger context.
 func (c *SugarContext) Ints16(key string, value []int16) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -230,10 +178,6 @@ func (c *SugarContext) Ints16(key string, value []int16) onelog.LoggerContext {
 
 // Int32 adds the field key with val as a int32 to the logger context.
 func (c *SugarContext) Int32(key string, value int32) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -241,10 +185,6 @@ func (c *SugarContext) Int32(key string, value int32) onelog.LoggerContext {
 
 // Ints32 adds the field key with val as a []int32 to the logger context.
 func (c *SugarContext) Ints32(key string, value []int32) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -252,10 +192,6 @@ func (c *SugarContext) Ints32(key string, value []int32) onelog.LoggerContext {
 
 // Int64 adds the field key with val as a int64 to the logger context.
 func (c *SugarContext) Int64(key string, value int64) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -263,10 +199,6 @@ func (c *SugarContext) Int64(key string, value int64) onelog.LoggerContext {
 
 // Ints64 adds the field key with val as a []int64 to the logger context.
 func (c *SugarContext) Ints64(key string, value []int64) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -274,10 +206,6 @@ func (c *SugarContext) Ints64(key string, value []int64) onelog.LoggerContext {
 
 // Uint adds the field key with val as a uint to the logger context.
 func (c *SugarContext) Uint(key string, value uint) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -285,10 +213,6 @@ func (c *SugarContext) Uint(key string, value uint) onelog.LoggerContext {
 
 // Uints adds the field key with val as a []uint to the logger context.
 func (c *SugarContext) Uints(key string, value []uint) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -296,10 +220,6 @@ func (c *SugarContext) Uints(key string, value []uint) onelog.LoggerContext {
 
 // Uint8 adds the field key with val as a uint8 to the logger context.
 func (c *SugarContext) Uint8(key string, value uint8) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -307,10 +227,6 @@ func (c *SugarContext) Uint8(key string, value uint8) onelog.LoggerContext {
 
 // Uints8 adds the field key with val as a []uint8 to the logger context.
 func (c *SugarContext) Uints8(key string, value []uint8) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	// Todo: Better way to do this?
 	// Convert []uint8 to []uint64
 	uints := make([]uint64, len(value))
@@ -325,10 +241,6 @@ func (c *SugarContext) Uints8(key string, value []uint8) onelog.LoggerContext {
 
 // Uint16 adds the field key with val as a uint16 to the logger context.
 func (c *SugarContext) Uint16(key string, value uint16) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -336,10 +248,6 @@ func (c *SugarContext) Uint16(key string, value uint16) onelog.LoggerContext {
 
 // Uints16 adds the field key with val as a []uint16 to the logger context.
 func (c *SugarContext) Uints16(key string, value []uint16) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -347,10 +255,6 @@ func (c *SugarContext) Uints16(key string, value []uint16) onelog.LoggerContext 
 
 // Uint32 adds the field key with val as a uint32 to the logger context.
 func (c *SugarContext) Uint32(key string, value uint32) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -358,10 +262,6 @@ func (c *SugarContext) Uint32(key string, value uint32) onelog.LoggerContext {
 
 // Uints32 adds the field key with val as a []uint32 to the logger context.
 func (c *SugarContext) Uints32(key string, value []uint32) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -369,10 +269,6 @@ func (c *SugarContext) Uints32(key string, value []uint32) onelog.LoggerContext 
 
 // Uint64 adds the field key with val as a uint64 to the logger context.
 func (c *SugarContext) Uint64(key string, value uint64) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -380,10 +276,6 @@ func (c *SugarContext) Uint64(key string, value uint64) onelog.LoggerContext {
 
 // Uints64 adds the field key with val as a []uint64 to the logger context.
 func (c *SugarContext) Uints64(key string, value []uint64) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -391,10 +283,6 @@ func (c *SugarContext) Uints64(key string, value []uint64) onelog.LoggerContext 
 
 // Float32 adds the field key with val as a float32 to the logger context.
 func (c *SugarContext) Float32(key string, value float32) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -402,10 +290,6 @@ func (c *SugarContext) Float32(key string, value float32) onelog.LoggerContext {
 
 // Floats32 adds the field key with val as a []float32 to the logger context.
 func (c *SugarContext) Floats32(key string, value []float32) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -413,10 +297,6 @@ func (c *SugarContext) Floats32(key string, value []float32) onelog.LoggerContex
 
 // Float64 adds the field key with val as a float64 to the logger context.
 func (c *SugarContext) Float64(key string, value float64) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -424,10 +304,6 @@ func (c *SugarContext) Float64(key string, value float64) onelog.LoggerContext {
 
 // Floats64 adds the field key with val as a []float64 to the logger context.
 func (c *SugarContext) Floats64(key string, value []float64) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -435,10 +311,6 @@ func (c *SugarContext) Floats64(key string, value []float64) onelog.LoggerContex
 
 // Bool adds the field key with val as a bool to the logger context.
 func (c *SugarContext) Bool(key string, value bool) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -446,10 +318,6 @@ func (c *SugarContext) Bool(key string, value bool) onelog.LoggerContext {
 
 // Bools adds the field key with val as a []bool to the logger context.
 func (c *SugarContext) Bools(key string, value []bool) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -457,10 +325,6 @@ func (c *SugarContext) Bools(key string, value []bool) onelog.LoggerContext {
 
 // Time adds the field key with val as a time.Time to the logger context.
 func (c *SugarContext) Time(key string, value time.Time) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -468,10 +332,6 @@ func (c *SugarContext) Time(key string, value time.Time) onelog.LoggerContext {
 
 // Times adds the field key with val as a []time.Time to the logger context.
 func (c *SugarContext) Times(key string, value []time.Time) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -479,10 +339,6 @@ func (c *SugarContext) Times(key string, value []time.Time) onelog.LoggerContext
 
 // Dur adds the field key with val as a time.Duration to the logger context.
 func (c *SugarContext) Dur(key string, value time.Duration) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -490,10 +346,6 @@ func (c *SugarContext) Dur(key string, value time.Duration) onelog.LoggerContext
 
 // Durs adds the field key with val as a []time.Duration to the logger context.
 func (c *SugarContext) Durs(key string, value []time.Duration) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -501,10 +353,6 @@ func (c *SugarContext) Durs(key string, value []time.Duration) onelog.LoggerCont
 
 // TimeDiff adds the field key with begin and end as a time.Time to the logger context.
 func (c *SugarContext) TimeDiff(key string, begin, end time.Time) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	diff := end.Sub(begin)
 	c.addField(key, diff)
 
@@ -513,10 +361,6 @@ func (c *SugarContext) TimeDiff(key string, begin, end time.Time) onelog.LoggerC
 
 // IPAddr adds the field key with val as a net.IP to the logger context.
 func (c *SugarContext) IPAddr(key string, value net.IP) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value.String())
 
 	return c
@@ -524,10 +368,6 @@ func (c *SugarContext) IPAddr(key string, value net.IP) onelog.LoggerContext {
 
 // IPPrefix adds the field key with val as a net.IPNet to the logger context.
 func (c *SugarContext) IPPrefix(key string, value net.IPNet) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value.String())
 
 	return c
@@ -535,10 +375,6 @@ func (c *SugarContext) IPPrefix(key string, value net.IPNet) onelog.LoggerContex
 
 // MACAddr adds the field key with val as a net.HardwareAddr to the logger context.
 func (c *SugarContext) MACAddr(key string, value net.HardwareAddr) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value.String())
 
 	return c
@@ -546,10 +382,6 @@ func (c *SugarContext) MACAddr(key string, value net.HardwareAddr) onelog.Logger
 
 // AnErr adds the field "error" with err as a string to the logger context.
 func (c *SugarContext) AnErr(key string, err error) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, err.Error())
 
 	return c
@@ -557,10 +389,6 @@ func (c *SugarContext) AnErr(key string, err error) onelog.LoggerContext {
 
 // Err adds the field "error" with err as a string to the logger context.
 func (c *SugarContext) Err(err error) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.AnErr("error", err)
 
 	return c
@@ -568,10 +396,6 @@ func (c *SugarContext) Err(err error) onelog.LoggerContext {
 
 // Errs adds the field key with val as a []error to the logger context.
 func (c *SugarContext) Errs(key string, errs []error) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, errs)
 
 	return c
@@ -579,10 +403,6 @@ func (c *SugarContext) Errs(key string, errs []error) onelog.LoggerContext {
 
 // Any adds the field key with val as a any to the logger context.
 func (c *SugarContext) Any(key string, value any) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addField(key, value)
 
 	return c
@@ -590,10 +410,6 @@ func (c *SugarContext) Any(key string, value any) onelog.LoggerContext {
 
 // Fields adds the field key with val as a Fields to the logger context.
 func (c *SugarContext) Fields(fields onelog.Fields) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.addFields(fields)
 
 	return c
@@ -601,10 +417,6 @@ func (c *SugarContext) Fields(fields onelog.Fields) onelog.LoggerContext {
 
 // Msg sends the LoggerContext with msg to the logger.
 func (c *SugarContext) Msg(msg string) {
-	if c == nil {
-		return
-	}
-
 	switch c.level {
 	case zapcore.DebugLevel:
 		c.logger.Debugw(msg, c.fields...)
@@ -622,10 +434,6 @@ func (c *SugarContext) Msg(msg string) {
 
 // Msgf sends the LoggerContext with formatted msg to the logger.
 func (c *SugarContext) Msgf(format string, v ...any) {
-	if c == nil {
-		return
-	}
-
 	msg := fmt.Sprintf(format, v...)
 	c.Msg(msg)
 }

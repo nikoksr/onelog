@@ -62,6 +62,7 @@ func TestMethods(t *testing.T) {
 	zerolog.TimeFieldFormat = time.RFC3339Nano
 	zerolog.DurationFieldInteger = true
 	zerolog.DurationFieldUnit = time.Nanosecond
+	zerolog.MessageFieldName = "msg"
 
 	buff := new(bytes.Buffer)
 	logger := zerolog.New(buff).With().Timestamp().Logger()

@@ -63,6 +63,8 @@ func newTestingLogger(buff *bytes.Buffer) *zap.Logger {
 	return zap.New(
 		zapcore.NewCore(
 			zapcore.NewJSONEncoder(zapcore.EncoderConfig{
+				MessageKey:     "msg",
+				TimeKey:        "time",
 				EncodeTime:     zapcore.RFC3339NanoTimeEncoder,
 				EncodeDuration: zapcore.NanosDurationEncoder,
 			}),

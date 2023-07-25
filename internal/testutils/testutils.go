@@ -15,6 +15,25 @@ import (
 	"github.com/nikoksr/onelog"
 )
 
+func parseLogRecord(t *testing.T, buff *bytes.Buffer) map[string]any {
+	t.Helper()
+
+	require.NotNil(t, buff, "the log buffer should not be nil")
+	require.Greater(t, buff.Len(), 0, "the log buffer should not be empty")
+
+	// Some logger prefix the log with a timestamp, so we need to remove it before unmarshalling the log
+	msg := buff.String()
+	idx := strings.Index(msg, "{")
+	msg = msg[idx:]
+
+	// Parse the log
+	result := make(map[string]any)
+	err := json.Unmarshal([]byte(msg), &result)
+	assert.NoError(t, err, "the log should be valid json")
+
+	return result
+}
+
 func assertEqualSlices(t *testing.T, expected any, actual any) {
 	t.Helper()
 
@@ -28,6 +47,22 @@ func assertEqualSlices(t *testing.T, expected any, actual any) {
 
 	for i := range expectedValues {
 		assert.EqualValues(t, expectedValues[i], actualValues[i], "Expected all values in slices to match. Mismatch at index: %d", i)
+	}
+}
+
+func validateRawJSON(t *testing.T, value interface{}) {
+	t.Helper()
+
+	switch v := value.(type) {
+	case string:
+		var js map[string]interface{}
+		err := json.Unmarshal([]byte(v), &js)
+		require.NoError(t, err, "the log should contain valid json string, but got: %s", v)
+	case map[string]interface{}:
+		_, err := json.Marshal(v)
+		require.NoError(t, err, "the log should contain value that can be marshaled to json, but got: %v", v)
+	default:
+		t.Errorf("Unexpected type for raw JSON value: %T", v)
 	}
 }
 
@@ -109,12 +144,13 @@ func validateErrors(t *testing.T, expected []error, got any) {
 	}
 }
 
-func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
-	t.Helper()
+type testCase struct {
+	Name            string
+	Fn              func() onelog.LoggerContext
+	ValidateMethods func(t *testing.T, result map[string]any)
+}
 
-	// Create a reusable context
-	logContext := logger.Info()
-
+func getMethodsTests(logContext onelog.LoggerContext) []testCase {
 	// Helper functions
 	now := func() time.Time {
 		return time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
@@ -124,15 +160,11 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 	stringer2 := bytes.NewBufferString("Value 2")
 
 	// Test that the methods return a non-nil *Context
-	tests := []struct {
-		Name     string
-		Fn       func() onelog.LoggerContext
-		Validate func(t *testing.T, result map[string]any)
-	}{
+	tests := []testCase{
 		{
 			Name: "Str",
 			Fn:   func() onelog.LoggerContext { return logContext.Str("Test", "Value") },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -142,7 +174,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Strs",
 			Fn:   func() onelog.LoggerContext { return logContext.Strs("Test", []string{"Value1", "Value2"}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -150,9 +182,39 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 			},
 		},
 		{
+			Name: "Bytes",
+			Fn:   func() onelog.LoggerContext { return logContext.Bytes("Test", []byte("Test")) },
+			ValidateMethods: func(t *testing.T, result map[string]any) {
+				t.Helper()
+				value, ok := result["Test"]
+				require.True(t, ok, "the log should contain the key 'Test'")
+				assert.EqualValues(t, []byte("Test"), value, "the log should contain the correct value")
+			},
+		},
+		{
+			Name: "Hex",
+			Fn:   func() onelog.LoggerContext { return logContext.Hex("Test", []byte{0x01, 0x02, 0x03}) },
+			ValidateMethods: func(t *testing.T, result map[string]any) {
+				t.Helper()
+				value, ok := result["Test"]
+				require.True(t, ok, "the log should contain the key 'Test'")
+				assert.EqualValues(t, "010203", value, "the log should contain the correct value")
+			},
+		},
+		{
+			Name: "RawJSON",
+			Fn:   func() onelog.LoggerContext { return logContext.RawJSON("Test", []byte(`{"test": "test"}`)) },
+			ValidateMethods: func(t *testing.T, result map[string]any) {
+				t.Helper()
+				value, ok := result["Test"]
+				require.True(t, ok, "the log should contain the key 'Test'")
+				validateRawJSON(t, value)
+			},
+		},
+		{
 			Name: "Stringer",
 			Fn:   func() onelog.LoggerContext { return logContext.Stringer("Test", stringer1) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -164,7 +226,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 			Fn: func() onelog.LoggerContext {
 				return logContext.Stringers("Test", []fmt.Stringer{stringer1, stringer2})
 			},
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -174,7 +236,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Int",
 			Fn:   func() onelog.LoggerContext { return logContext.Int("Test", 42) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -184,7 +246,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Ints",
 			Fn:   func() onelog.LoggerContext { return logContext.Ints("Test", []int{1, 2, 3}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -194,7 +256,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Int8",
 			Fn:   func() onelog.LoggerContext { return logContext.Int8("Test", 42) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -204,7 +266,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Ints8",
 			Fn:   func() onelog.LoggerContext { return logContext.Ints8("Test", []int8{1, 2, 3}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -214,7 +276,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Int16",
 			Fn:   func() onelog.LoggerContext { return logContext.Int16("Test", 42) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -224,7 +286,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Ints16",
 			Fn:   func() onelog.LoggerContext { return logContext.Ints16("Test", []int16{1, 2, 3}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -234,7 +296,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Int32",
 			Fn:   func() onelog.LoggerContext { return logContext.Int32("Test", 42) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -244,7 +306,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Ints32",
 			Fn:   func() onelog.LoggerContext { return logContext.Ints32("Test", []int32{1, 2, 3}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -254,7 +316,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Int64",
 			Fn:   func() onelog.LoggerContext { return logContext.Int64("Test", 42) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -264,7 +326,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Ints64",
 			Fn:   func() onelog.LoggerContext { return logContext.Ints64("Test", []int64{1, 2, 3}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -274,7 +336,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Uint",
 			Fn:   func() onelog.LoggerContext { return logContext.Uint("Test", 42) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -284,7 +346,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Uints",
 			Fn:   func() onelog.LoggerContext { return logContext.Uints("Test", []uint{1, 2, 3}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -294,7 +356,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Uint8",
 			Fn:   func() onelog.LoggerContext { return logContext.Uint8("Test", 42) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -304,7 +366,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Uints8",
 			Fn:   func() onelog.LoggerContext { return logContext.Uints8("Test", []uint8{1, 2, 3}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				t.Log(result)
 				value, ok := result["Test"]
@@ -315,7 +377,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Uint16",
 			Fn:   func() onelog.LoggerContext { return logContext.Uint16("Test", 42) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -325,7 +387,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Uints16",
 			Fn:   func() onelog.LoggerContext { return logContext.Uints16("Test", []uint16{1, 2, 3}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -335,7 +397,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Uint32",
 			Fn:   func() onelog.LoggerContext { return logContext.Uint32("Test", 42) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -345,7 +407,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Uints32",
 			Fn:   func() onelog.LoggerContext { return logContext.Uints32("Test", []uint32{1, 2, 3}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -355,7 +417,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Uint64",
 			Fn:   func() onelog.LoggerContext { return logContext.Uint64("Test", 42) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -365,7 +427,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Uints64",
 			Fn:   func() onelog.LoggerContext { return logContext.Uints64("Test", []uint64{1, 2, 3}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -375,7 +437,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Float32",
 			Fn:   func() onelog.LoggerContext { return logContext.Float32("Test", 42.42) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -385,7 +447,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Floats32",
 			Fn:   func() onelog.LoggerContext { return logContext.Floats32("Test", []float32{1.1, 2.2, 3.3}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -395,7 +457,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Float64",
 			Fn:   func() onelog.LoggerContext { return logContext.Float64("Test", 42.42) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -405,7 +467,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Floats64",
 			Fn:   func() onelog.LoggerContext { return logContext.Floats64("Test", []float64{1.1, 2.2, 3.3}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -415,7 +477,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Bool",
 			Fn:   func() onelog.LoggerContext { return logContext.Bool("Test", true) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -425,7 +487,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Bools",
 			Fn:   func() onelog.LoggerContext { return logContext.Bools("Test", []bool{true, false, true}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -433,19 +495,9 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 			},
 		},
 		{
-			Name: "Bytes",
-			Fn:   func() onelog.LoggerContext { return logContext.Bytes("Test", []byte("Test")) },
-			Validate: func(t *testing.T, result map[string]any) {
-				t.Helper()
-				value, ok := result["Test"]
-				require.True(t, ok, "the log should contain the key 'Test'")
-				assert.EqualValues(t, []byte("Test"), value, "the log should contain the correct value")
-			},
-		},
-		{
 			Name: "Time",
 			Fn:   func() onelog.LoggerContext { return logContext.Time("Test", now()) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -455,7 +507,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Times",
 			Fn:   func() onelog.LoggerContext { return logContext.Times("Test", []time.Time{now(), now()}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -465,7 +517,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Dur",
 			Fn:   func() onelog.LoggerContext { return logContext.Dur("Test", time.Second) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -475,7 +527,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "Durs",
 			Fn:   func() onelog.LoggerContext { return logContext.Durs("Test", []time.Duration{time.Second, time.Second}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -485,7 +537,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "TimeDiff",
 			Fn:   func() onelog.LoggerContext { return logContext.TimeDiff("Test", now(), now()) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -495,7 +547,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		{
 			Name: "IPAddr",
 			Fn:   func() onelog.LoggerContext { return logContext.IPAddr("Test", net.IP{127, 0, 0, 1}) },
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -509,7 +561,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 			Fn: func() onelog.LoggerContext {
 				return logContext.IPPrefix("Test", net.IPNet{IP: net.IP{127, 0, 0, 1}, Mask: net.IPMask{255, 255, 255, 0}})
 			},
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -523,7 +575,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 			Fn: func() onelog.LoggerContext {
 				return logContext.MACAddr("Test", net.HardwareAddr{0, 0, 0, 0, 0, 0})
 			},
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
@@ -537,7 +589,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 			Fn: func() onelog.LoggerContext {
 				return logContext.Err(fmt.Errorf("test error"))
 			},
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["error"]
 				require.True(t, ok, "the log should contain the key 'error'")
@@ -549,7 +601,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 			Fn: func() onelog.LoggerContext {
 				return logContext.Errs("errors", []error{fmt.Errorf("test error1"), fmt.Errorf("test error2")})
 			},
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["errors"]
 				require.True(t, ok, "the log should contain the key 'errors'")
@@ -561,7 +613,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 			Fn: func() onelog.LoggerContext {
 				return logContext.AnErr("my_error", fmt.Errorf("test error"))
 			},
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["my_error"]
 				require.True(t, ok, "the log should contain the key 'my_error'")
@@ -573,7 +625,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 			Fn: func() onelog.LoggerContext {
 				return logContext.Any("my_any", "test any")
 			},
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["my_any"]
 				require.True(t, ok, "the log should contain the key 'my_any'")
@@ -585,7 +637,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 			Fn: func() onelog.LoggerContext {
 				return logContext.Fields(map[string]any{"my_field": "test field"})
 			},
-			Validate: func(t *testing.T, result map[string]any) {
+			ValidateMethods: func(t *testing.T, result map[string]any) {
 				t.Helper()
 				value, ok := result["my_field"]
 				require.True(t, ok, "the log should contain the key 'my_field'")
@@ -594,33 +646,39 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 		},
 	}
 
+	return tests
+}
+
+func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
+	t.Helper()
+
+	// Get tests with a valid context
+	logContext := logger.Info()
+	tests := getMethodsTests(logContext)
+
 	for _, tc := range tests {
 		t.Run(tc.Name, func(t *testing.T) {
-			defer logSink.Reset()
+			logSink.Reset() // Make sure the log sink is empty
 
 			// Check if the returned context is non-nil
 			assert.NotNil(t, tc.Fn(), "the returned context should not be nil")
 
-			// Send the log
-			tc.Fn().Msg("Test message")
+			// Validate that the log message is correct
+			const testText = "Test message"
+			tc.Fn().Msg(testText)
 
-			// Check if the log was written
-			assert.NotEmpty(t, logSink.String(), "the log should have been written")
+			result := parseLogRecord(t, logSink)
+			assert.Equal(t, testText, result["msg"], "the log should contain the correct message")
 
-			// Some logger prefix the log with a timestamp, so we need to remove it before unmarshalling the log
-			msg := logSink.String()
-			require.NotEmpty(t, msg, "the log should have been written")
+			// Validate all type methods
+			tc.ValidateMethods(t, result)
 
-			idx := strings.Index(msg, "{")
-			msg = msg[idx:]
+			// Finally, validate that Msgf works
+			logSink.Reset()
+			tc.Fn().Msgf("Test message %s", "with format")
 
-			// Validate the log
-			result := make(map[string]any)
-
-			err := json.Unmarshal([]byte(msg), &result)
-			assert.NoError(t, err, "the log should be valid json")
-
-			tc.Validate(t, result)
+			result = parseLogRecord(t, logSink)
+			assert.Equal(t, "Test message with format", result["msg"], "the log should contain the correct message")
 		})
 	}
 }

@@ -74,10 +74,6 @@ func (a *Adapter) Fatal() onelog.LoggerContext {
 
 // Bytes adds the field key with val as a []byte to the logger context.
 func (c *Context) Bytes(key string, value []byte) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.String(key, string(value)))
 
 	return c
@@ -85,10 +81,6 @@ func (c *Context) Bytes(key string, value []byte) onelog.LoggerContext {
 
 // Hex adds the field key with val as a hex string to the logger context.
 func (c *Context) Hex(key string, value []byte) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.String(key, fmt.Sprintf("%x", value)))
 
 	return c
@@ -96,10 +88,6 @@ func (c *Context) Hex(key string, value []byte) onelog.LoggerContext {
 
 // RawJSON adds the field key with val as a raw JSON string to the logger context.
 func (c *Context) RawJSON(key string, value []byte) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.String(key, string(value)))
 
 	return c
@@ -107,10 +95,6 @@ func (c *Context) RawJSON(key string, value []byte) onelog.LoggerContext {
 
 // Str adds the field key with val as a string to the logger context.
 func (c *Context) Str(key string, value string) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.String(key, value))
 
 	return c
@@ -118,10 +102,6 @@ func (c *Context) Str(key string, value string) onelog.LoggerContext {
 
 // Strs adds the field key with val as a []string to the logger context.
 func (c *Context) Strs(key string, value []string) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
@@ -129,10 +109,6 @@ func (c *Context) Strs(key string, value []string) onelog.LoggerContext {
 
 // Stringer adds the field key with val as a fmt.Stringer to the logger context.
 func (c *Context) Stringer(key string, value fmt.Stringer) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.String(key, value.String()))
 
 	return c
@@ -140,10 +116,6 @@ func (c *Context) Stringer(key string, value fmt.Stringer) onelog.LoggerContext 
 
 // Stringers adds the field key with val as a []fmt.Stringer to the logger context.
 func (c *Context) Stringers(key string, value []fmt.Stringer) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	// Todo: Better way to do this?
 	strs := make([]string, len(value))
 	for i, str := range value {
@@ -156,10 +128,6 @@ func (c *Context) Stringers(key string, value []fmt.Stringer) onelog.LoggerConte
 
 // Int adds the field key with val as a int to the logger context.
 func (c *Context) Int(key string, value int) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Int(key, value))
 
 	return c
@@ -167,10 +135,6 @@ func (c *Context) Int(key string, value int) onelog.LoggerContext {
 
 // Ints adds the field key with val as a []int to the logger context.
 func (c *Context) Ints(key string, value []int) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
@@ -178,10 +142,6 @@ func (c *Context) Ints(key string, value []int) onelog.LoggerContext {
 
 // Int8 adds the field key with val as a int8 to the logger context.
 func (c *Context) Int8(key string, value int8) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Int64(key, int64(value)))
 
 	return c
@@ -189,10 +149,6 @@ func (c *Context) Int8(key string, value int8) onelog.LoggerContext {
 
 // Ints8 adds the field key with val as a []int8 to the logger context.
 func (c *Context) Ints8(key string, value []int8) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
@@ -200,10 +156,6 @@ func (c *Context) Ints8(key string, value []int8) onelog.LoggerContext {
 
 // Int16 adds the field key with val as a int16 to the logger context.
 func (c *Context) Int16(key string, value int16) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Int64(key, int64(value)))
 
 	return c
@@ -211,10 +163,6 @@ func (c *Context) Int16(key string, value int16) onelog.LoggerContext {
 
 // Ints16 adds the field key with val as a []int16 to the logger context.
 func (c *Context) Ints16(key string, value []int16) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
@@ -222,10 +170,6 @@ func (c *Context) Ints16(key string, value []int16) onelog.LoggerContext {
 
 // Int32 adds the field key with val as a int32 to the logger context.
 func (c *Context) Int32(key string, value int32) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Int64(key, int64(value)))
 
 	return c
@@ -233,10 +177,6 @@ func (c *Context) Int32(key string, value int32) onelog.LoggerContext {
 
 // Ints32 adds the field key with val as a []int32 to the logger context.
 func (c *Context) Ints32(key string, value []int32) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
@@ -244,10 +184,6 @@ func (c *Context) Ints32(key string, value []int32) onelog.LoggerContext {
 
 // Int64 adds the field key with val as a int64 to the logger context.
 func (c *Context) Int64(key string, value int64) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Int64(key, value))
 
 	return c
@@ -255,10 +191,6 @@ func (c *Context) Int64(key string, value int64) onelog.LoggerContext {
 
 // Ints64 adds the field key with val as a []int64 to the logger context.
 func (c *Context) Ints64(key string, value []int64) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
@@ -266,10 +198,6 @@ func (c *Context) Ints64(key string, value []int64) onelog.LoggerContext {
 
 // Uint adds the field key with val as a uint to the logger context.
 func (c *Context) Uint(key string, value uint) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Uint64(key, uint64(value)))
 
 	return c
@@ -277,10 +205,6 @@ func (c *Context) Uint(key string, value uint) onelog.LoggerContext {
 
 // Uints adds the field key with val as a []uint to the logger context.
 func (c *Context) Uints(key string, value []uint) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
@@ -288,10 +212,6 @@ func (c *Context) Uints(key string, value []uint) onelog.LoggerContext {
 
 // Uint8 adds the field key with val as a uint8 to the logger context.
 func (c *Context) Uint8(key string, value uint8) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Uint64(key, uint64(value)))
 
 	return c
@@ -299,10 +219,6 @@ func (c *Context) Uint8(key string, value uint8) onelog.LoggerContext {
 
 // Uints8 adds the field key with val as a []uint8 to the logger context.
 func (c *Context) Uints8(key string, value []uint8) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	// Todo: Better way to do this?
 	// Convert []uint8 to []uint64
 	uints := make([]uint64, len(value))
@@ -317,10 +233,6 @@ func (c *Context) Uints8(key string, value []uint8) onelog.LoggerContext {
 
 // Uint16 adds the field key with val as a uint16 to the logger context.
 func (c *Context) Uint16(key string, value uint16) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Uint64(key, uint64(value)))
 
 	return c
@@ -328,10 +240,6 @@ func (c *Context) Uint16(key string, value uint16) onelog.LoggerContext {
 
 // Uints16 adds the field key with val as a []uint16 to the logger context.
 func (c *Context) Uints16(key string, value []uint16) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
@@ -339,10 +247,6 @@ func (c *Context) Uints16(key string, value []uint16) onelog.LoggerContext {
 
 // Uint32 adds the field key with val as a uint32 to the logger context.
 func (c *Context) Uint32(key string, value uint32) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Uint64(key, uint64(value)))
 
 	return c
@@ -350,10 +254,6 @@ func (c *Context) Uint32(key string, value uint32) onelog.LoggerContext {
 
 // Uints32 adds the field key with val as a []uint32 to the logger context.
 func (c *Context) Uints32(key string, value []uint32) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
@@ -361,10 +261,6 @@ func (c *Context) Uints32(key string, value []uint32) onelog.LoggerContext {
 
 // Uint64 adds the field key with val as a uint64 to the logger context.
 func (c *Context) Uint64(key string, value uint64) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Uint64(key, value))
 
 	return c
@@ -372,10 +268,6 @@ func (c *Context) Uint64(key string, value uint64) onelog.LoggerContext {
 
 // Uints64 adds the field key with val as a []uint64 to the logger context.
 func (c *Context) Uints64(key string, value []uint64) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
@@ -383,10 +275,6 @@ func (c *Context) Uints64(key string, value []uint64) onelog.LoggerContext {
 
 // Float32 adds the field key with val as a float32 to the logger context.
 func (c *Context) Float32(key string, value float32) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	d, _ := decimal.NewFromFloat32(value).Float64()
 
 	c.fields = append(c.fields, slog.Float64(key, d))
@@ -396,10 +284,6 @@ func (c *Context) Float32(key string, value float32) onelog.LoggerContext {
 
 // Floats32 adds the field key with val as a []float32 to the logger context.
 func (c *Context) Floats32(key string, value []float32) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
@@ -407,10 +291,6 @@ func (c *Context) Floats32(key string, value []float32) onelog.LoggerContext {
 
 // Float64 adds the field key with val as a float64 to the logger context.
 func (c *Context) Float64(key string, value float64) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Float64(key, value))
 
 	return c
@@ -418,10 +298,6 @@ func (c *Context) Float64(key string, value float64) onelog.LoggerContext {
 
 // Floats64 adds the field key with val as a []float64 to the logger context.
 func (c *Context) Floats64(key string, value []float64) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
@@ -429,10 +305,6 @@ func (c *Context) Floats64(key string, value []float64) onelog.LoggerContext {
 
 // Bool adds the field key with val as a bool to the logger context.
 func (c *Context) Bool(key string, value bool) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Bool(key, value))
 
 	return c
@@ -440,10 +312,6 @@ func (c *Context) Bool(key string, value bool) onelog.LoggerContext {
 
 // Bools adds the field key with val as a []bool to the logger context.
 func (c *Context) Bools(key string, value []bool) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
@@ -451,10 +319,6 @@ func (c *Context) Bools(key string, value []bool) onelog.LoggerContext {
 
 // Time adds the field key with val as a time.Time to the logger context.
 func (c *Context) Time(key string, value time.Time) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Time(key, value))
 
 	return c
@@ -462,10 +326,6 @@ func (c *Context) Time(key string, value time.Time) onelog.LoggerContext {
 
 // Times adds the field key with val as a []time.Time to the logger context.
 func (c *Context) Times(key string, value []time.Time) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
@@ -473,10 +333,6 @@ func (c *Context) Times(key string, value []time.Time) onelog.LoggerContext {
 
 // Dur adds the field key with val as a time.Duration to the logger context.
 func (c *Context) Dur(key string, value time.Duration) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Duration(key, value))
 
 	return c
@@ -484,10 +340,6 @@ func (c *Context) Dur(key string, value time.Duration) onelog.LoggerContext {
 
 // Durs adds the field key with val as a []time.Duration to the logger context.
 func (c *Context) Durs(key string, value []time.Duration) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
@@ -495,10 +347,6 @@ func (c *Context) Durs(key string, value []time.Duration) onelog.LoggerContext {
 
 // TimeDiff adds the field key with begin and end as a time.Time to the logger context.
 func (c *Context) TimeDiff(key string, begin, end time.Time) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	diff := end.Sub(begin)
 	c.fields = append(c.fields, slog.Duration(key, diff))
 
@@ -507,10 +355,6 @@ func (c *Context) TimeDiff(key string, begin, end time.Time) onelog.LoggerContex
 
 // IPAddr adds the field key with val as a net.IPAddr to the logger context.
 func (c *Context) IPAddr(key string, value net.IP) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.String(key, value.String()))
 
 	return c
@@ -518,10 +362,6 @@ func (c *Context) IPAddr(key string, value net.IP) onelog.LoggerContext {
 
 // IPPrefix adds the field key with val as a net.IPPrefix to the logger context.
 func (c *Context) IPPrefix(key string, value net.IPNet) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.String(key, value.String()))
 
 	return c
@@ -529,10 +369,6 @@ func (c *Context) IPPrefix(key string, value net.IPNet) onelog.LoggerContext {
 
 // MACAddr adds the field key with val as a net.HardwareAddr to the logger context.
 func (c *Context) MACAddr(key string, value net.HardwareAddr) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.String(key, value.String()))
 
 	return c
@@ -540,10 +376,6 @@ func (c *Context) MACAddr(key string, value net.HardwareAddr) onelog.LoggerConte
 
 // AnErr adds the field key with val as a error to the logger context.
 func (c *Context) AnErr(key string, value error) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.String(key, value.Error()))
 
 	return c
@@ -551,10 +383,6 @@ func (c *Context) AnErr(key string, value error) onelog.LoggerContext {
 
 // Err adds the field "error" with val as a error to the logger context.
 func (c *Context) Err(value error) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.AnErr("error", value)
 
 	return c
@@ -562,10 +390,6 @@ func (c *Context) Err(value error) onelog.LoggerContext {
 
 // Errs adds the field "error" with val as a []error to the logger context.
 func (c *Context) Errs(key string, value []error) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	// Todo: Better way to do this?
 	// Convert []error to []string. If we don't do this, slog prints empty objects
 	errs := make([]string, len(value))
@@ -580,20 +404,12 @@ func (c *Context) Errs(key string, value []error) onelog.LoggerContext {
 
 // Any adds the field key with val as a arbitrary value to the logger context.
 func (c *Context) Any(key string, value any) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
 
 func (c *Context) Fields(fields onelog.Fields) onelog.LoggerContext {
-	if c == nil {
-		return nil
-	}
-
 	for key, value := range fields {
 		c.fields = append(c.fields, slog.Any(key, value))
 	}
@@ -603,10 +419,6 @@ func (c *Context) Fields(fields onelog.Fields) onelog.LoggerContext {
 
 // Msg sends the LoggerContext with msg to the logger.
 func (c *Context) Msg(msg string) {
-	if c == nil {
-		return
-	}
-
 	//nolint:staticcheck // passing a nil context is fine, check slog.Logger.Info implementation for example
 	c.logger.Log(nil, c.level, msg, c.fields...)
 	c.fields = make([]any, 0) // reset fields
@@ -614,10 +426,6 @@ func (c *Context) Msg(msg string) {
 
 // Msgf sends the LoggerContext with formatted msg to the logger.
 func (c *Context) Msgf(format string, v ...any) {
-	if c == nil {
-		return
-	}
-
 	msg := fmt.Sprintf(format, v...)
 	c.Msg(msg)
 }
