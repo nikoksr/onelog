@@ -24,8 +24,9 @@ type (
 
 	// Context is the zerolog logging context. It implements the onelog.LoggerContext interface.
 	Context struct {
-		logger *zerolog.Logger
-		event  *zerolog.Event
+		logger       *zerolog.Logger
+		event        *zerolog.Event
+		resetEventFn func() *zerolog.Event
 	}
 )
 
@@ -39,32 +40,36 @@ func NewAdapter(l *zerolog.Logger) onelog.Logger {
 // Debug returns a LoggerContext for a debug log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Debug() onelog.LoggerContext {
 	return &Context{
-		logger: a.logger,
-		event:  a.logger.Debug(),
+		logger:       a.logger,
+		event:        a.logger.Debug(),
+		resetEventFn: a.logger.Debug,
 	}
 }
 
 // Info returns a LoggerContext for a info log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Info() onelog.LoggerContext {
 	return &Context{
-		logger: a.logger,
-		event:  a.logger.Info(),
+		logger:       a.logger,
+		event:        a.logger.Info(),
+		resetEventFn: a.logger.Info,
 	}
 }
 
 // Warn returns a LoggerContext for a warn log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Warn() onelog.LoggerContext {
 	return &Context{
-		logger: a.logger,
-		event:  a.logger.Warn(),
+		logger:       a.logger,
+		event:        a.logger.Warn(),
+		resetEventFn: a.logger.Warn,
 	}
 }
 
 // Error returns a LoggerContext for a error log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Error() onelog.LoggerContext {
 	return &Context{
-		logger: a.logger,
-		event:  a.logger.Error(),
+		logger:       a.logger,
+		event:        a.logger.Error(),
+		resetEventFn: a.logger.Error,
 	}
 }
 
@@ -594,6 +599,7 @@ func (c *Context) Msg(msg string) {
 	}
 
 	c.event.Msg(msg)
+	c.reset()
 }
 
 // Msgf sends the LoggerContext with formatted msg to the logger.

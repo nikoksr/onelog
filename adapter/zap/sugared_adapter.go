@@ -144,9 +144,7 @@ func (c *SugarContext) Stringer(key string, val fmt.Stringer) onelog.LoggerConte
 		return nil
 	}
 
-	c.addField(key, val)
-
-	return c
+	return c.Str(key, val.String())
 }
 
 // Stringers adds the field key with val as a []fmt.Stringer to the logger context.
@@ -155,9 +153,13 @@ func (c *SugarContext) Stringers(key string, vals []fmt.Stringer) onelog.LoggerC
 		return nil
 	}
 
-	c.addField(key, vals)
+	// Todo: Better way to do this?
+	strings := make([]string, len(vals))
+	for i, val := range vals {
+		strings[i] = val.String()
+	}
 
-	return c
+	return c.Strs(key, strings)
 }
 
 // Int adds the field key with val as a int to the logger context.
@@ -309,7 +311,14 @@ func (c *SugarContext) Uints8(key string, value []uint8) onelog.LoggerContext {
 		return nil
 	}
 
-	c.addField(key, value)
+	// Todo: Better way to do this?
+	// Convert []uint8 to []uint64
+	uints := make([]uint64, len(value))
+	for i, v := range value {
+		uints[i] = uint64(v)
+	}
+
+	c.addField(key, uints)
 
 	return c
 }
@@ -508,7 +517,7 @@ func (c *SugarContext) IPAddr(key string, value net.IP) onelog.LoggerContext {
 		return nil
 	}
 
-	c.addField(key, value)
+	c.addField(key, value.String())
 
 	return c
 }
@@ -519,7 +528,7 @@ func (c *SugarContext) IPPrefix(key string, value net.IPNet) onelog.LoggerContex
 		return nil
 	}
 
-	c.addField(key, value)
+	c.addField(key, value.String())
 
 	return c
 }
@@ -530,7 +539,7 @@ func (c *SugarContext) MACAddr(key string, value net.HardwareAddr) onelog.Logger
 		return nil
 	}
 
-	c.addField(key, value)
+	c.addField(key, value.String())
 
 	return c
 }

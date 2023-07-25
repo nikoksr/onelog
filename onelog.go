@@ -7,7 +7,7 @@ import (
 )
 
 // Fields type is an alias for a map that stores key-value pairs.
-type Fields map[string]any
+type Fields = map[string]any
 
 // Logger interface provides methods for logging at various levels.
 type Logger interface {

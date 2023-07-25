@@ -590,7 +590,7 @@ func (c *Context) Msg(msg string) {
 	}
 
 	c.logger.Log(c.level, msg, c.fields...)
-	c.fields = make([]zapcore.Field, 0) // reset fields
+	c.reset()
 }
 
 // Msgf sends the LoggerContext with formatted msg to the logger.

@@ -1,10 +1,11 @@
 package slogadapter
 
 import (
-	"context"
 	"fmt"
 	"net"
 	"time"
+
+	"github.com/shopspring/decimal"
 
 	"golang.org/x/exp/slog"
 
@@ -71,6 +72,39 @@ func (a *Adapter) Fatal() onelog.LoggerContext {
 	return a.newContext(slog.LevelError) // Using Error level here because Fatal is not supported by slog
 }
 
+// Bytes adds the field key with val as a []byte to the logger context.
+func (c *Context) Bytes(key string, value []byte) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.fields = append(c.fields, slog.String(key, string(value)))
+
+	return c
+}
+
+// Hex adds the field key with val as a hex string to the logger context.
+func (c *Context) Hex(key string, value []byte) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.fields = append(c.fields, slog.String(key, fmt.Sprintf("%x", value)))
+
+	return c
+}
+
+// RawJSON adds the field key with val as a raw JSON string to the logger context.
+func (c *Context) RawJSON(key string, value []byte) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.fields = append(c.fields, slog.String(key, string(value)))
+
+	return c
+}
+
 // Str adds the field key with val as a string to the logger context.
 func (c *Context) Str(key string, value string) onelog.LoggerContext {
 	if c == nil {
@@ -88,7 +122,7 @@ func (c *Context) Strs(key string, value []string) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
@@ -110,11 +144,12 @@ func (c *Context) Stringers(key string, value []fmt.Stringer) onelog.LoggerConte
 		return nil
 	}
 
+	// Todo: Better way to do this?
 	strs := make([]string, len(value))
 	for i, str := range value {
 		strs[i] = str.String()
 	}
-	c.fields = append(c.fields, slog.Group(key, strs))
+	c.fields = append(c.fields, slog.Any(key, strs))
 
 	return c
 }
@@ -136,7 +171,7 @@ func (c *Context) Ints(key string, value []int) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
@@ -158,7 +193,7 @@ func (c *Context) Ints8(key string, value []int8) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
@@ -180,7 +215,7 @@ func (c *Context) Ints16(key string, value []int16) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
@@ -202,7 +237,7 @@ func (c *Context) Ints32(key string, value []int32) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
@@ -224,7 +259,7 @@ func (c *Context) Ints64(key string, value []int64) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
@@ -246,7 +281,7 @@ func (c *Context) Uints(key string, value []uint) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
@@ -268,7 +303,14 @@ func (c *Context) Uints8(key string, value []uint8) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	// Todo: Better way to do this?
+	// Convert []uint8 to []uint64
+	uints := make([]uint64, len(value))
+	for i, v := range value {
+		uints[i] = uint64(v)
+	}
+
+	c.fields = append(c.fields, slog.Any(key, uints))
 
 	return c
 }
@@ -290,7 +332,7 @@ func (c *Context) Uints16(key string, value []uint16) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
@@ -312,7 +354,7 @@ func (c *Context) Uints32(key string, value []uint32) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
@@ -334,7 +376,7 @@ func (c *Context) Uints64(key string, value []uint64) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
@@ -345,7 +387,9 @@ func (c *Context) Float32(key string, value float32) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Float64(key, float64(value)))
+	d, _ := decimal.NewFromFloat32(value).Float64()
+
+	c.fields = append(c.fields, slog.Float64(key, d))
 
 	return c
 }
@@ -356,7 +400,7 @@ func (c *Context) Floats32(key string, value []float32) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
@@ -378,7 +422,7 @@ func (c *Context) Floats64(key string, value []float64) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
@@ -400,7 +444,7 @@ func (c *Context) Bools(key string, value []bool) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
@@ -422,7 +466,7 @@ func (c *Context) Times(key string, value []time.Time) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
@@ -444,7 +488,7 @@ func (c *Context) Durs(key string, value []time.Duration) onelog.LoggerContext {
 		return nil
 	}
 
-	c.fields = append(c.fields, slog.Group(key, value))
+	c.fields = append(c.fields, slog.Any(key, value))
 
 	return c
 }
@@ -522,11 +566,14 @@ func (c *Context) Errs(key string, value []error) onelog.LoggerContext {
 		return nil
 	}
 
+	// Todo: Better way to do this?
+	// Convert []error to []string. If we don't do this, slog prints empty objects
 	errs := make([]string, len(value))
 	for i, err := range value {
 		errs[i] = err.Error()
 	}
-	c.fields = append(c.fields, slog.Group(key, errs))
+
+	c.fields = append(c.fields, slog.Any(key, errs))
 
 	return c
 }
@@ -560,7 +607,8 @@ func (c *Context) Msg(msg string) {
 		return
 	}
 
-	c.logger.Log(context.Background(), c.level, msg, c.fields...)
+	//nolint:staticcheck // passing a nil context is fine, check slog.Logger.Info implementation for example
+	c.logger.Log(nil, c.level, msg, c.fields...)
 	c.fields = make([]any, 0) // reset fields
 }
 
