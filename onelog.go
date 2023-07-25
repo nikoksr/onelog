@@ -29,6 +29,15 @@ type Logger interface {
 
 // LoggerContext interface provides methods for adding context to logs.
 type LoggerContext interface {
+	// Bytes adds the field key with val as a []byte to the logger context.
+	Bytes(key string, value []byte) LoggerContext
+
+	// Hex adds the field key with val as a hex string to the logger context.
+	Hex(key string, value []byte) LoggerContext
+
+	// RawJSON adds the field key with val as a json.RawMessage to the logger context.
+	RawJSON(key string, value []byte) LoggerContext
+
 	// Str adds the field key with val as a string to the logger context.
 	Str(key, value string) LoggerContext
 

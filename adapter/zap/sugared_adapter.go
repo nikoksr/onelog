@@ -83,6 +83,39 @@ func (c *SugarContext) addFields(fields onelog.Fields) {
 	}
 }
 
+// Bytes adds the field key with val as a []byte to the logger context.
+func (c *SugarContext) Bytes(key string, value []byte) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.addField(key, string(value))
+
+	return c
+}
+
+// Hex adds the field key with val as a hex string to the logger context.
+func (c *SugarContext) Hex(key string, value []byte) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.addField(key, fmt.Sprintf("%x", value))
+
+	return c
+}
+
+// RawJSON adds the field key with val as a json.RawMessage to the logger context.
+func (c *SugarContext) RawJSON(key string, value []byte) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.addField(key, value)
+
+	return c
+}
+
 // Str adds the field key with val as a string to the logger context.
 func (c *SugarContext) Str(key string, value string) onelog.LoggerContext {
 	if c == nil {

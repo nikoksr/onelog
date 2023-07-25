@@ -71,6 +71,43 @@ func (a *Adapter) Fatal() onelog.LoggerContext {
 	return a.newContext(zap.FatalLevel)
 }
 
+func (c *Context) reset() {
+	c.fields = make([]zapcore.Field, 0)
+}
+
+// Bytes adds the field key with val as a []byte to the logger context.
+func (c *Context) Bytes(key string, value []byte) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.fields = append(c.fields, zap.ByteString(key, value))
+
+	return c
+}
+
+// Hex adds the field key with val as a hex string to the logger context.
+func (c *Context) Hex(key string, value []byte) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.fields = append(c.fields, zap.ByteString(key, value))
+
+	return c
+}
+
+// RawJSON adds the field key with val as a raw json string to the logger context.
+func (c *Context) RawJSON(key string, value []byte) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.fields = append(c.fields, zap.ByteString(key, value))
+
+	return c
+}
+
 // Str adds the field key with val as a string to the logger context.
 func (c *Context) Str(key string, value string) onelog.LoggerContext {
 	if c == nil {

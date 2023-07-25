@@ -71,9 +71,47 @@ func (a *Adapter) Error() onelog.LoggerContext {
 // Fatal returns a LoggerContext for a fatal log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Fatal() onelog.LoggerContext {
 	return &Context{
-		logger: a.logger,
-		event:  a.logger.Fatal(),
+		logger:       a.logger,
+		event:        a.logger.Fatal(),
+		resetEventFn: a.logger.Fatal,
 	}
+}
+
+func (c *Context) reset() {
+	c.event = c.resetEventFn()
+}
+
+// Bytes adds the field key with val as a []byte to the logger context.
+func (c *Context) Bytes(key string, value []byte) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.event.Bytes(key, value)
+
+	return c
+}
+
+// Hex adds the field key with val as a hex string to the logger context.
+func (c *Context) Hex(key string, value []byte) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.event.Hex(key, value)
+
+	return c
+}
+
+// RawJSON adds the field key with val as a json.RawMessage to the logger context.
+func (c *Context) RawJSON(key string, value []byte) onelog.LoggerContext {
+	if c == nil {
+		return nil
+	}
+
+	c.event.RawJSON(key, value)
+
+	return c
 }
 
 // Str adds the field key with val as a string to the logger context.

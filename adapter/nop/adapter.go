@@ -29,6 +29,9 @@ func (a *Adapter) Warn() onelog.LoggerContext  { return &Context{} }
 func (a *Adapter) Error() onelog.LoggerContext { return &Context{} }
 func (a *Adapter) Fatal() onelog.LoggerContext { return &Context{} }
 
+func (c *Context) Bytes(_ string, _ []byte) onelog.LoggerContext                    { return c }
+func (c *Context) Hex(_ string, _ []byte) onelog.LoggerContext                      { return c }
+func (c *Context) RawJSON(_ string, _ []byte) onelog.LoggerContext                  { return c }
 func (c *Context) Str(_, _ string) onelog.LoggerContext                             { return c }
 func (c *Context) Strs(_ string, _ []string) onelog.LoggerContext                   { return c }
 func (c *Context) Stringer(_ string, _ fmt.Stringer) onelog.LoggerContext           { return c }
