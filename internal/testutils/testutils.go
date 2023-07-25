@@ -15,16 +15,19 @@ import (
 	"github.com/nikoksr/onelog"
 )
 
-func assertEqualSlices[T comparable](t *testing.T, expected []T, actual any) {
+func assertEqualSlices(t *testing.T, expected any, actual any) {
 	t.Helper()
+
+	expectedValues, ok := expected.([]any)
+	require.True(t, ok, "Expected argument 'expected' to be a slice of numbers, however, received: %T", expected)
 
 	actualValues, ok := actual.([]any)
 	require.True(t, ok, "Expected argument 'actual' to be a slice of numbers, however, received: %T", actual)
 
-	require.Equal(t, len(expected), len(actualValues), "Expected slices to have same length. Expected: %d, Actual: %d", len(expected), len(actualValues))
+	require.Equal(t, len(expectedValues), len(actualValues), "Expected slices to have same length. Expected: %d, Actual: %d", len(expectedValues), len(actualValues))
 
-	for i := range expected {
-		assert.EqualValues(t, expected[i], actualValues[i], "Expected all values in slices to match. Mismatch at index: %d", i)
+	for i := range expectedValues {
+		assert.EqualValues(t, expectedValues[i], actualValues[i], "Expected all values in slices to match. Mismatch at index: %d", i)
 	}
 }
 
@@ -306,7 +309,7 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 				t.Log(result)
 				value, ok := result["Test"]
 				require.True(t, ok, "the log should contain the key 'Test'")
-				assertEqualSlices(t, []uint8{1, 2, 3}, value)
+				assertEqualSlices(t, []any{uint8(1), uint8(2), uint8(3)}, value)
 			},
 		},
 		{
