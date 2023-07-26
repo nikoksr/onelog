@@ -11,6 +11,9 @@ type Fields = map[string]any
 
 // Logger interface provides methods for logging at various levels.
 type Logger interface {
+	// With returns the logger with the given fields.
+	With(fields ...any) Logger
+
 	// Debug returns a LoggerContext for a debug log.
 	Debug() LoggerContext
 

@@ -47,6 +47,11 @@ func (a *SugarAdapter) newContext(level zapcore.Level) onelog.LoggerContext {
 	}
 }
 
+// With returns the logger with the given fields.
+func (a *SugarAdapter) With(fields ...any) onelog.Logger {
+	return &SugarAdapter{logger: a.logger.With(fields...)}
+}
+
 // Debug returns a LoggerContext for a debug log. To send the log, use the Msg or Msgf methods.
 func (a *SugarAdapter) Debug() onelog.LoggerContext {
 	return a.newContext(zapcore.DebugLevel)

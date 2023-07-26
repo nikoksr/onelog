@@ -2,7 +2,10 @@ package zapadapter
 
 import (
 	"bytes"
+	"io"
 	"testing"
+
+	"github.com/nikoksr/onelog"
 
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/zap"
@@ -10,49 +13,51 @@ import (
 	"github.com/nikoksr/onelog/internal/testutils"
 )
 
+func newSugarAdapter(out io.Writer) onelog.Logger {
+	return NewSugarAdapter(newLogger(out).Sugar())
+}
+
 // TestNewSugarAdapter tests if NewSugarAdapter returns a non-nil *Adapter.
 func TestNewSugarAdapter(t *testing.T) {
 	t.Parallel()
 
-	zapLogger, _ := zap.NewDevelopment()
-	logger := NewSugarAdapter(zapLogger.Sugar())
+	adapter := newSugarAdapter(io.Discard)
 
-	assert.NotNil(t, logger, "the returned adapter should not be nil")
+	assert.NotNil(t, adapter, "the returned adapter should not be nil")
 }
 
 // TestSugarContexts tests if each log level returns a valid *Context.
 func TestSugarContexts(t *testing.T) {
 	t.Parallel()
 
-	zapLogger, _ := zap.NewDevelopment()
-	logger := NewSugarAdapter(zapLogger.Sugar())
+	adapter := newSugarAdapter(io.Discard)
 
 	// Debug
-	logContext := logger.Debug()
+	logContext := adapter.Debug()
 	assert.NotNil(t, logContext, "the returned context should not be nil")
 	assert.IsType(t, new(SugarContext), logContext, "the returned context should be of type *Context")
 	assert.Equal(t, logContext.(*SugarContext).level, zap.DebugLevel, "the returned context should have the correct log level")
 
 	// Info
-	logContext = logger.Info()
+	logContext = adapter.Info()
 	assert.NotNil(t, logContext, "the returned context should not be nil")
 	assert.IsType(t, new(SugarContext), logContext, "the returned context should be of type *Context")
 	assert.Equal(t, logContext.(*SugarContext).level, zap.InfoLevel, "the returned context should have the correct log level")
 
 	// Warn
-	logContext = logger.Warn()
+	logContext = adapter.Warn()
 	assert.NotNil(t, logContext, "the returned context should not be nil")
 	assert.IsType(t, new(SugarContext), logContext, "the returned context should be of type *Context")
 	assert.Equal(t, logContext.(*SugarContext).level, zap.WarnLevel, "the returned context should have the correct log level")
 
 	// Error
-	logContext = logger.Error()
+	logContext = adapter.Error()
 	assert.NotNil(t, logContext, "the returned context should not be nil")
 	assert.IsType(t, new(SugarContext), logContext, "the returned context should be of type *Context")
 	assert.Equal(t, logContext.(*SugarContext).level, zap.ErrorLevel, "the returned context should have the correct log level")
 
 	// Fatal
-	logContext = logger.Fatal()
+	logContext = adapter.Fatal()
 	assert.NotNil(t, logContext, "the returned context should not be nil")
 	assert.IsType(t, new(SugarContext), logContext, "the returned context should be of type *Context")
 	assert.Equal(t, logContext.(*SugarContext).level, zap.FatalLevel, "the returned context should have the correct log level")
@@ -63,8 +68,7 @@ func TestSugarMethods(t *testing.T) {
 	t.Parallel()
 
 	buff := new(bytes.Buffer)
-	logger := newTestingLogger(buff)
-	adapter := NewSugarAdapter(logger.Sugar())
+	adapter := newSugarAdapter(buff)
 
 	testutils.TestingMethods(t, adapter, buff)
 }

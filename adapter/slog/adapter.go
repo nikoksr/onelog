@@ -47,6 +47,11 @@ func (a *Adapter) newContext(level slog.Level) *Context {
 	}
 }
 
+// With returns the logger with the given fields.
+func (a *Adapter) With(fields ...any) onelog.Logger {
+	return &Adapter{logger: a.logger.With(fields...)}
+}
+
 // Debug returns a LoggerContext for a debug log. To send the log, use the Msg or Msgf methods.
 func (a *Adapter) Debug() onelog.LoggerContext {
 	return a.newContext(slog.LevelDebug)

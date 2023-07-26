@@ -2,9 +2,12 @@ package zerologadapter
 
 import (
 	"bytes"
+	"io"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/nikoksr/onelog"
 
 	"github.com/rs/zerolog"
 	"github.com/stretchr/testify/assert"
@@ -12,12 +15,38 @@ import (
 	"github.com/nikoksr/onelog/internal/testutils"
 )
 
+// Setting global zerolog settings to make sure the tests are deterministic.
+func TestMain(m *testing.M) {
+	originalTimeFieldFormat := zerolog.TimeFieldFormat
+	originalDurationFieldInteger := zerolog.DurationFieldInteger
+	originalDurationFieldUnit := zerolog.DurationFieldUnit
+	originalMessageFieldName := zerolog.MessageFieldName
+
+	defer func() {
+		zerolog.TimeFieldFormat = originalTimeFieldFormat
+		zerolog.DurationFieldInteger = originalDurationFieldInteger
+		zerolog.DurationFieldUnit = originalDurationFieldUnit
+		zerolog.MessageFieldName = originalMessageFieldName
+	}()
+
+	zerolog.TimeFieldFormat = time.RFC3339Nano
+	zerolog.DurationFieldInteger = true
+	zerolog.DurationFieldUnit = time.Nanosecond
+	zerolog.MessageFieldName = "msg"
+
+	os.Exit(m.Run())
+}
+
+func newAdapter(out io.Writer) onelog.Logger {
+	logger := zerolog.New(out).With().Timestamp().Logger()
+	return NewAdapter(&logger)
+}
+
 // TestNewAdapter tests if NewAdapter returns a non-nil *Adapter.
 func TestNewAdapter(t *testing.T) {
 	t.Parallel()
 
-	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
-	adapter := NewAdapter(&logger)
+	adapter := newAdapter(io.Discard)
 
 	assert.NotNil(t, adapter, "the returned adapter should not be nil")
 }
@@ -26,8 +55,7 @@ func TestNewAdapter(t *testing.T) {
 func TestContexts(t *testing.T) {
 	t.Parallel()
 
-	logger := zerolog.New(os.Stderr).With().Timestamp().Logger()
-	adapter := NewAdapter(&logger)
+	adapter := newAdapter(io.Discard)
 
 	// Debug
 	logContext := adapter.Debug()
@@ -59,14 +87,8 @@ func TestContexts(t *testing.T) {
 func TestMethods(t *testing.T) {
 	t.Parallel()
 
-	zerolog.TimeFieldFormat = time.RFC3339Nano
-	zerolog.DurationFieldInteger = true
-	zerolog.DurationFieldUnit = time.Nanosecond
-	zerolog.MessageFieldName = "msg"
-
 	buff := new(bytes.Buffer)
-	logger := zerolog.New(buff).With().Timestamp().Logger()
-	adapter := NewAdapter(&logger)
+	adapter := newAdapter(buff)
 
 	testutils.TestingMethods(t, adapter, buff)
 }

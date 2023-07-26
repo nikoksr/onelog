@@ -23,6 +23,7 @@ type (
 // NewAdapter returns a new adapter. The nop adapter does not log anything and can be used as a placeholder or fallback.
 func NewAdapter() onelog.Logger { return &Adapter{} }
 
+func (a *Adapter) With(_ ...any) onelog.Logger { return a }
 func (a *Adapter) Debug() onelog.LoggerContext { return &Context{} }
 func (a *Adapter) Info() onelog.LoggerContext  { return &Context{} }
 func (a *Adapter) Warn() onelog.LoggerContext  { return &Context{} }

@@ -652,6 +652,10 @@ func getMethodsTests(logContext onelog.LoggerContext) []testCase {
 func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 	t.Helper()
 
+	// With is a shared method between all onelog.Logger implementations, so we set a test value here. We'll verify this
+	// behavior in the tests further down.
+	logger = logger.With("test-with", "test")
+
 	// Get tests with a valid context
 	logContext := logger.Info()
 	tests := getMethodsTests(logContext)
@@ -668,7 +672,11 @@ func TestingMethods(t *testing.T, logger onelog.Logger, logSink *bytes.Buffer) {
 			tc.Fn().Msg(testText)
 
 			result := parseLogRecord(t, logSink)
+
+			// Now that the log record is parsed, we can validate the message and the test-with field. With() got called
+			// in the beginning of the test, we expect the test-with field to be present in all log records.
 			assert.Equal(t, testText, result["msg"], "the log should contain the correct message")
+			assert.Equal(t, "test", result["test-with"], "the log should contain the correct value for 'test-with'")
 
 			// Validate all type methods
 			tc.ValidateMethods(t, result)
